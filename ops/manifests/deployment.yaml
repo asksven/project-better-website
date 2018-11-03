@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: project-better
+spec:
+  replicas:
+  template:
+    metadata:
+      name: project-better-web
+      labels:
+        app: project-better-app
+        role: frontend
+    spec:
+      containers:
+      - name: project-better
+        image: asksven/better-website:latest
+        imagePullPolicy: Always
+        ports:
+        - name: frontend
+          containerPort: 80
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-better-svc
+spec:
+  selector:
+    app: project-better-app
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: project-better
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: better.gke-dev.asksven.io
+    http:
+      paths:
+      - backend:
+          serviceName: project-better-svc
+          servicePort: 80
+        path: /  
