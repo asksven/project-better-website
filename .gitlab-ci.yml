@@ -41,7 +41,7 @@ build container with img:
   stage: build
   image: r.j3ss.co/img
   tags:
-    - asksven-homelab-dev
+    - asksven-homelab-dev-non-priv
   script:
     - echo "$DOCKER_REGISTRY_PASSWORD2" | img login -u "$DOCKER_REGISTRY_USER2" --password-stdin ${DOCKER_REGISTRY2}
     - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} || true
