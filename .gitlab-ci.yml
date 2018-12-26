@@ -15,9 +15,9 @@ generate hugo:
   image: jojomi/hugo:0.44
   script:
   - mkdir public && cd src && hugo --cleanDestinationDir --destination ../public/
-   artifacts:
-     paths:
-     - public
+  artifacts:
+    paths:
+    - public
 
 # .deploy_template: &deploy_template
 #   stage: deploy
