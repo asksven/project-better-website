@@ -39,7 +39,7 @@ metadata:
     kubernetes.io/ingress.class: traefik
 spec:
   rules:
-  - host: better.gke-dev.asksven.io
+  - host: {{ HOST1 }}
     http:
       paths:
       - backend:
