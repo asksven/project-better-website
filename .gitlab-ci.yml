@@ -13,6 +13,8 @@ stages:
 generate hugo:
   stage: generate
   image: jojomi/hugo:0.44
+  tags:
+  - asksven-homelab-dev  
   script:
   - mkdir public && cd src && hugo --cleanDestinationDir --destination ../public/
   artifacts:
