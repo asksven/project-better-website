@@ -2,7 +2,7 @@ variables:
   # Gitlab namespace with branch name: "namespace-branchname"
   # NAMESPACE: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
   NAMESPACE: better-website
-  DOCKER_IMAGE_URL: ${DOCKER_REGISTRY}/asksven/${NAMESPACE}
+  DOCKER_IMAGE_URL: asksven/${NAMESPACE}
 
 stages:
   - generate
@@ -40,14 +40,14 @@ build container:
     - docker tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
     - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
-# .deploy_template: &deploy_template
-#   stage: deploy
-#   image: ksiebel/docker-kubernetes-deploy
-#   script:
-#   - cd ops && ./deploy.sh
-#   artifacts:
-#     paths:
-#     - ops
+.deploy_template: &deploy_template
+  stage: deploy
+  image: ksiebel/docker-kubernetes-deploy
+  script:
+  - cd ops && ./deploy.sh
+  artifacts:
+    paths:
+    - ops
 
 # .deploy_template_azure: &deploy_template_azure
 #   <<: *deploy_template
@@ -58,12 +58,14 @@ build container:
 #   only:
 #   - master@asksven/prometheus-deployment
 
-# .deploy_template_dev: &deploy_template_dev
-#   <<: *deploy_template
-#   variables:
-#     DEPLOY_ENV: development
-#   only:
-#   - master@sven.knispel/prometheus-deployment-dev
+.deploy_template_dev: &deploy_template_dev
+  <<: *deploy_template
+  tags:
+    - asksven-homelab-dev
+  variables:
+    DEPLOY_ENV: development
+  only:
+  - master
 
 
 # # stable to production:
