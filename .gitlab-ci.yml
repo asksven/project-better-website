@@ -28,14 +28,14 @@ build container:
   tags:
     - asksven-homelab-dev
   script:
-    - rs login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - rs pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
-    - rs build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+    - img login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+    - img pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
+    - img build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
-    - rs push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
-    - rs tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+    - img push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
+    - img tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
-    - rs push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+    - img push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
 # build container:
 #   stage: build
