@@ -22,20 +22,20 @@ generate hugo:
     paths:
     - public
 
-# build container:
-#   stage: build
-#   image: r.j3ss.co/img
-#   tags:
-#     - asksven-homelab-dev
-#   script:
-#     - echo "$DOCKER_REGISTRY_PASSWORD" | img login -u "$DOCKER_REGISTRY_USER" --password-stdin ${DOCKER_REGISTRY}
-#     - img pull ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
-#     - img build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
-#     - echo pushing ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
-#     - img push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
-#     - img tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
-#     - echo pushing ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
-#     - img push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+build container with img:
+  stage: build
+  image: r.j3ss.co/img
+  tags:
+    - asksven-homelab-dev
+  script:
+    - echo "$DOCKER_REGISTRY_PASSWORD2" | img login -u "$DOCKER_REGISTRY_USER2" --password-stdin ${DOCKER_REGISTRY2}
+    - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
+    - img build -t ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
+    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
+    - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
+    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
 build container:
   stage: build
@@ -50,10 +50,10 @@ build container:
   script:
     - docker login -u "${DOCKER_REGISTRY_USER}" -p "$DOCKER_REGISTRY_PASSWORD" ${DOCKER_REGISTRY}
     - docker pull ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
-    - docker build --cache-from ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+    - docker build --cache-from ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
     - echo pushing ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
     - docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
-    - docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+    - docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
     - echo pushing ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
     - docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
