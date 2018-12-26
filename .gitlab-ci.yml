@@ -2,7 +2,7 @@ variables:
   # Gitlab namespace with branch name: "namespace-branchname"
   # NAMESPACE: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
   NAMESPACE: better-website
-  DOCKER_IMAGE_URL: asksven/${NAMESPACE}
+  DOCKER_IMAGE_URL: asksven/better-website
 
 stages:
   - generate
@@ -24,24 +24,38 @@ generate hugo:
 
 build container:
   stage: build
-  image: docker:18.06
+  image: r.j3ss.co/img
   tags:
     - asksven-homelab-dev
-  services:
-    - docker:18.06-dind
-  variables:
-    DOCKER_HOST: tcp://localhost:2375
-    DOCKER_DRIVER: overlay2
   script:
-    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - docker pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
-    - docker build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+    - rs login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+    - rs pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
+    - rs build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
-    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
-    - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
-    - docker tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+    - rs push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
+    - rs tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
-    - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+    - rs push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+
+# build container:
+#   stage: build
+#   image: docker:18.06.1-ce
+#   tags:
+#     - asksven-homelab-dev
+#   services:
+#     - docker:18.06.1-ce-dind
+#   variables:
+#     DOCKER_HOST: tcp://localhost:2375
+#     DOCKER_DRIVER: overlay2
+#   script:
+#     - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+#     - docker pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
+#     - docker build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+#     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
+#     - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
+#     - docker tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+#     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
+#     - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
 .deploy_template: &deploy_template
   stage: deploy
