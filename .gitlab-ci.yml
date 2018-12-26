@@ -7,9 +7,9 @@ variables:
 stages:
   - generate
   - build
-#  - deploy
-#  - status
-#  - cleanup
+  - deploy
+  - status
+  - cleanup
 
 generate hugo:
   stage: generate
@@ -36,6 +36,7 @@ build container:
     - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} https://${DOCKER_REGISTRY}
     - docker pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
     - docker build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+    - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
     - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
     - docker tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
@@ -79,27 +80,27 @@ build container:
 #   <<: *deploy_template_dev
 
 
-# .status_template: &status_template
-#   stage: status
-#   image: ksiebel/docker-kubernetes-deploy
-#   script:
-#   - kubectl describe pods,svc,deployment,ing --namespace=${NAMESPACE}
+.status_template: &status_template
+  stage: status
+  image: ksiebel/docker-kubernetes-deploy
+  script:
+  - kubectl describe pods,svc,deployment,ing --namespace=${NAMESPACE}
 
-# status namespace dev:
-#   <<: *status_template
-#   only:
-#   - master
+status namespace dev:
+  <<: *status_template
+  only:
+  - master
 
 
-# .cleanup_template: &cleanup_template
-#   stage: status
-#   image: ksiebel/docker-kubernetes-deploy
-#   script:
-#   - kubectl delete ${NAMESPACE}
-#   when: manual
+.cleanup_template: &cleanup_template
+  stage: status
+  image: ksiebel/docker-kubernetes-deploy
+  script:
+  - kubectl delete ${NAMESPACE}
+  when: manual
 
-# cleanup dev:
-#   <<: *cleanup_template
-#   only:
-#   - master
+cleanup dev:
+  <<: *cleanup_template
+  only:
+  - master
   
