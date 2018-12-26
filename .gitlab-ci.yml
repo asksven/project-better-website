@@ -2,6 +2,7 @@ variables:
   # Gitlab namespace with branch name: "namespace-branchname"
   # NAMESPACE: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
   NAMESPACE: better-website
+  DOCKER_IMAGE_URL: ${DOCKER_REGISTRY}/${NAMESPACE}
 
 stages:
   - generate
