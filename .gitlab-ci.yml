@@ -3,7 +3,7 @@ variables:
   # NAMESPACE: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
   NAMESPACE: better-website
   DOCKER_IMAGE_URL: asksven/better-website
-
+  DOCKER_IMAGE_URL2: homelab-setup/project-better-website
 stages:
   - generate
   - build
@@ -36,6 +36,21 @@ generate hugo:
 #     - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 #     - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
 #     - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+
+build container with img:
+  stage: build
+  image: r.j3ss.co/img
+  tags:
+    - asksven-homelab-dev
+  script:
+    - echo "$DOCKER_REGISTRY_PASSWORD2" | img login -u "$DOCKER_REGISTRY_USER2" --password-stdin ${DOCKER_REGISTRY2}
+    - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} || true
+    - img build -t ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} .
+    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} 
+    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF}
+    - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG}
+    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} 
+    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG}
 
 build container:
   stage: build
