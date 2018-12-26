@@ -22,20 +22,20 @@ generate hugo:
     paths:
     - public
 
-build container with img:
-  stage: build
-  image: r.j3ss.co/img
-  tags:
-    - asksven-homelab-dev
-  script:
-    - echo "$DOCKER_REGISTRY_PASSWORD2" | img login -u "$DOCKER_REGISTRY_USER2" --password-stdin ${DOCKER_REGISTRY2}
-    - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
-    - img build -t ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
-    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
-    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
-    - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
-    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
-    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+# build container with img:
+#   stage: build
+#   image: r.j3ss.co/img
+#   tags:
+#     - asksven-homelab-dev
+#   script:
+#     - echo "$DOCKER_REGISTRY_PASSWORD2" | img login -u "$DOCKER_REGISTRY_USER2" --password-stdin ${DOCKER_REGISTRY2}
+#     - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
+#     - img build -t ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+#     - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
+#     - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
+#     - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+#     - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
+#     - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
 build container:
   stage: build
@@ -91,8 +91,8 @@ build container:
 # # stable to staging:
 # #   <<: *deploy_template_staging
 
-# stable to dev:
-#   <<: *deploy_template_dev
+stable to dev:
+  <<: *deploy_template_dev
 
 
 .status_template: &status_template
