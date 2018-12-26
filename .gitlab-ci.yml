@@ -114,7 +114,7 @@ stable to dev:
   stage: status
   image: ksiebel/docker-kubernetes-deploy
   script:
-  - kubectl describe pods,svc,deployment,ing --namespace=${NAMESPACE}
+  - kubectl describe pods,deployment,ing --namespace=${NAMESPACE}
 
 status namespace dev:
   <<: *status_template

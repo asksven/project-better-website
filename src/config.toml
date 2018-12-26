@@ -56,9 +56,3 @@ weight = 10
 name = "<i class='fa fa-cloud-download'></i> <label>Download</label>"
 url = "https://github.com/asksven/project-better-website/archive/master.zip"
 weight = 11
-
-[[menu.shortcuts]]
-name = "<i class='fa fa-bookmark'></i> <label>Hugo Documentation</label>"
-identifier = "hugodoc"
-url = "https://gohugo.io/"
-weight = 20
