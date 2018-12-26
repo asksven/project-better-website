@@ -30,7 +30,7 @@ build container:
   script:
     - img login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
     - img pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
-    - img build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+    - img build -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
     - img push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
     - img tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
