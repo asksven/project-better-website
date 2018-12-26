@@ -34,8 +34,8 @@ build container:
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
     - img push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
     - img tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
-    - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
-    - img push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+    - echo pushing ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
+    - img push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
 # build container:
 #   stage: build
