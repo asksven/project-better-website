@@ -33,10 +33,11 @@ build container:
     DOCKER_HOST: tcp://localhost:2375
     DOCKER_DRIVER: overlay2
   script:
-    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} https://${DOCKER_REGISTRY}
+    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
     - docker pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
     - docker build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
+    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
     - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
     - docker tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
     - echo pushing ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
