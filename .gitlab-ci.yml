@@ -5,7 +5,7 @@ variables:
 
 stages:
   - generate
-#  - build
+  - build
 #  - deploy
 #  - status
 #  - cleanup
@@ -20,6 +20,24 @@ generate hugo:
   artifacts:
     paths:
     - public
+
+build container:
+  stage: build
+  image: docker:1.13
+  tags:
+    - asksven-homelab-dev
+  services:
+    - docker:1.13-dind
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_DRIVER: overlay2
+  script:
+    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} https://${DOCKER_REGISTRY}
+    - docker pull ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
+    - docker build --cache-from ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} -t ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
+    - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
+    - docker tag ${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
+    - docker push ${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
 # .deploy_template: &deploy_template
 #   stage: deploy
