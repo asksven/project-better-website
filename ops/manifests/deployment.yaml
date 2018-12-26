@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: project-better
-        image: asksven/better-website:{{ tag }}
+        image: quay.io/asksven/better-website:{{ TAG }}
         imagePullPolicy: Always
         ports:
         - name: frontend

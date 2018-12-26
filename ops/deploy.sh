@@ -51,7 +51,7 @@ mkdir -p ${TARGET_DIR}/values
 for f in ${K8S_DIR}/*.yaml
 do
   echo processing $f
-  jinja2 $f --format=yaml --strict -D HOST1=${HOST1} -D DEPLOY_ENV=${DEPLOY_ENV} > "${TARGET_DIR}/$(basename ${f})"
+  jinja2 $f --format=yaml --strict -D TAG=${CI_BUILD_REF} -D HOST1=${HOST1} -D DEPLOY_ENV=${DEPLOY_ENV} > "${TARGET_DIR}/$(basename ${f})"
 done
 
 
