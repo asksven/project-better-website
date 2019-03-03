@@ -32,32 +32,42 @@ class TestTemplate(unittest.TestCase):
             self.fail(ex.msg)
 
     def test_case_1(self):
-        """Find and click tags link"""
+        """Find and click bbs link"""
         try:
             self.driver.get(baseUrl)
-            el = self.driver.find_element_by_xpath("/html/body/section[1]/div/nav[2]/div/a[2]/h2")
+            el = self.driver.find_element_by_xpath("/html/body/article/aside/ul/li[1]/div/a")
             el.click()
-            self.driver.save_screenshot('../output/tags.png')
+            self.driver.save_screenshot('../output/bbs.png')
         except NoSuchElementException as ex:
             self.fail(ex.msg)
 
 
     def test_case_2(self):
-        """Find and click Category link"""
+        """Find and click bbs webapp link"""
         try:
             self.driver.get(baseUrl)
-            el = self.driver.find_element_by_xpath("/html/body/section[1]/div/nav[2]/div/a[1]/h2")
+            el = self.driver.find_element_by_xpath("/html/body/article/aside/ul/li[2]/div/a")
             el.click()
-            self.driver.save_screenshot('../output/category.png')
+            self.driver.save_screenshot('../output/bbswebapp.png')
         except NoSuchElementException as ex:
             self.fail(ex.msg)
 
 
     def test_case_3(self):
+        """Find and click bwof link"""
+        try:
+            self.driver.get(baseUrl)
+            el = self.driver.find_element_by_xpath("/html/body/article/aside/ul/li[3]/div/a")
+            el.click()
+            self.driver.save_screenshot('../output/bwof.png')
+        except NoSuchElementException as ex:
+            self.fail(ex.msg)
+
+    def test_case_3(self):
         """Find and click github link"""
         try:
             self.driver.get(baseUrl)
-            el = self.driver.find_element_by_xpath("/html/body/section[1]/div/nav[1]/div[2]/nav/a[2]")
+            el = self.driver.find_element_by_xpath("/html/body/header/nav/li[1]/a")
             el.click()
             self.driver.switch_to_window(self.driver.window_handles[1])
             self.driver.save_screenshot('../output/github.png')

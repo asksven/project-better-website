@@ -65,7 +65,7 @@ build container:
   stage: build
   image: docker:18.06.1-ce
   tags:
-    - asksven-homelab-dev
+    - asksven-homelab-prd-public
   services:
     - docker:18.06.1-ce-dind
   variables:
