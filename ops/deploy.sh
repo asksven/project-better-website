@@ -17,15 +17,14 @@ echo '---$CI_COMMIT_REF_SLUG:' ${CI_COMMIT_REF_SLUG}
 
 if [ "$DEPLOY_ENV" = "production" ]
 then
-    HOST1="better-dev.d.asksven.io"
-
-elif [ "$DEPLOY_ENV" = "development" ]
+    HOST1="better.asksven.io"
+elif [ "$DEPLOY_ENV" = "temp" ]
 then
-    HOST1="better-dev.d.asksven.io"
-
+    # for temp we use the ${CI_BUILD_REF} to create a unique URL    
+    HOST1="better-${CI_BUILD_REF}.asksven.io"
 else
-    HOST1="better-${CI_COMMIT_REF_SLUG}.d.asksven.io"
-
+    # we use the branch name in the URL
+    HOST1="better-${CI_COMMIT_REF_SLUG}.asksven.io"
 fi
 echo '---$HOST1:' ${HOST1}
 
@@ -34,7 +33,7 @@ echo '---$HOST1:' ${HOST1}
 
 COMMAND="kubectl create namespace $NAMESPACE"
 
-if [ "$TESTING" = "1" ] 
+if [ "$TESTING" = "1" ]
 then
   echo '>>>would execute command:' ${COMMAND}
 else
@@ -55,12 +54,14 @@ do
 done
 
 
+
 COMMAND1="kubectl --namespace=$NAMESPACE apply -f ${TARGET_DIR}"
 
-if [ "$TESTING" = "1" ] 
+if [ "$TESTING" = "1" ]
 then
   echo '>>>would execute command:' ${COMMAND1}
 
 else
   eval $COMMAND1
 fi
+

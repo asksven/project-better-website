@@ -3,7 +3,6 @@ variables:
   # NAMESPACE: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
   NAMESPACE: better-website
   DOCKER_IMAGE_URL: asksven/better-website
-  DOCKER_IMAGE_URL2: homelab-setup/project-better-website
 stages:
   - generate
   - build
@@ -11,62 +10,50 @@ stages:
   - status
   - cleanup
 
+# ===========================================
+#  Generate the static website
+# ===========================================
 generate hugo:
+  before_script:
+  - git submodule sync --recursive
+  - git submodule update --init --recursive
   stage: generate
-  image: jojomi/hugo:0.44
+  image: jojomi/hugo:0.53
   tags:
-  - asksven-homelab-dev  
+  - asksven-homelab-prd-public
   script:
-  - mkdir public && cd src && hugo --cleanDestinationDir --destination ../public/
+  # baseURL = "/" is required as we want to build the docker image once and deploy it to multiple domains (e.g. for testing)  
+  - mkdir public && cd src && hugo --baseURL "/" --cleanDestinationDir --destination ../public/
   artifacts:
     paths:
     - public
 
-# build container with img:
+# generate hugo:
+#   stage: generate
+#   image: jojomi/hugo:0.44
+#   tags:
+#   - asksven-homelab-dev  
+#   script:
+#   - mkdir public && cd src && hugo --cleanDestinationDir --destination ../public/
+#   artifacts:
+#     paths:
+#     - public
+
+
+# build container with img priv:
 #   stage: build
 #   image: r.j3ss.co/img
 #   tags:
 #     - asksven-homelab-dev
 #   script:
 #     - echo "$DOCKER_REGISTRY_PASSWORD2" | img login -u "$DOCKER_REGISTRY_USER2" --password-stdin ${DOCKER_REGISTRY2}
-#     - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} || true
-#     - img build -t ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} .
-#     - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} 
-#     - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF}
-#     - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
-#     - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
-#     - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
-
-build container with img priv:
-  stage: build
-  image: r.j3ss.co/img
-  tags:
-    - asksven-homelab-dev
-  script:
-    - echo "$DOCKER_REGISTRY_PASSWORD2" | img login -u "$DOCKER_REGISTRY_USER2" --password-stdin ${DOCKER_REGISTRY2}
-    - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} || true
-    - img build -t ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} .
-    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} 
-    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF}
-    - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG}
-    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} 
-    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG}
-
-build container with img non priv:
-  stage: build
-  image: r.j3ss.co/img
-  tags:
-    - asksven-homelab-dev-non-priv
-  script:
-    - echo "$DOCKER_REGISTRY_PASSWORD2" | img login -u "$DOCKER_REGISTRY_USER2" --password-stdin ${DOCKER_REGISTRY2}
-    - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} || true
-    - img build -t ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} .
-    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} 
-    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF}
-    - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG}
-    - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} 
-    - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG}
-  allow_failure: true  
+#     - img pull ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} || true
+#     - img build -t ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} .
+#     - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} 
+#     - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF}
+#     - img tag ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF} ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG}
+#     - echo pushing ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG} 
+#     - img push ${DOCKER_REGISTRY2}/${DOCKER_IMAGE_URL2}:${CI_BUILD_REF_SLUG}
 
 build container:
   stage: build
@@ -88,65 +75,149 @@ build container:
     - echo pushing ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG} 
     - docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_URL}:${CI_BUILD_REF_SLUG}
 
+# ===========================================
+#  Templates
+# ===========================================
 .deploy_template: &deploy_template
-  stage: deploy
-  image: ksiebel/docker-kubernetes-deploy
+  image: codemelter/docker-kubernetes-deploy
   script:
   - cd ops && ./deploy.sh
   artifacts:
     paths:
     - ops
 
-# .deploy_template_azure: &deploy_template_azure
-#   <<: *deploy_template
-#   tags:
-#   - monitoring-poc-cluster
-#   variables:
-#     DEPLOY_ENV: azure
-#   only:
-#   - master@asksven/prometheus-deployment
-
-.deploy_template_dev: &deploy_template_dev
-  <<: *deploy_template
+.test_template: &test_template
+  image: joyzoursky/python-chromedriver:3.6
+  before_script:
+    - pip install -r tests/webtests_1/requirements.txt
   tags:
-    - asksven-homelab-dev
-  variables:
-    DEPLOY_ENV: development
-  only:
-  - master
+    - asksven-homelab-prd-public
+  script:
+    - cd tests/webtests_1
+    - python -u selenium-python.py
+  artifacts:
+    paths:
+    - tests/output
 
-
-# # stable to production:
-# #   <<: *deploy_template_production
-
-# # stable to staging:
-# #   <<: *deploy_template_staging
-
-stable to dev:
-  <<: *deploy_template_dev
-
+.cleanup_template: &cleanup_template
+  image: codemelter/docker-kubernetes-deploy
+  script:
+  - echo We are going to delete namespace $NAMESPACE
+  - kubectl delete ns ${NAMESPACE}
 
 .status_template: &status_template
-  stage: status
-  image: ksiebel/docker-kubernetes-deploy
+  image: codemelter/docker-kubernetes-deploy
   script:
   - kubectl describe pods,deployment,ing --namespace=${NAMESPACE}
 
-status namespace dev:
+# ===========================================
+#  Test stage:
+#    1. deploy to a unique URL in an own ns
+#    2. run ui tests
+#    3. tear down
+# ===========================================
+deploy temp:
+  stage: test_deploy
+  <<: *deploy_template
+  tags:
+    - asksven-homelab-prd-public
+  variables:
+    DEPLOY_ENV: temp
+    # we need a temp name to deploy to
+    NAMESPACE: ${CI_PROJECT_NAME}-${CI_BUILD_REF}
+
+status temp_deployment:
+  stage: test_status
   <<: *status_template
-  only:
-  - master
+  tags:
+    - asksven-homelab-prd-public
+  variables:
+    DEPLOY_ENV: temp
+    # we deployed to a temp name
+    NAMESPACE: ${CI_PROJECT_NAME}-${CI_BUILD_REF}
 
+ui test temp deployment:
+  stage: test_run
+  <<: *test_template
+  tags:
+    - asksven-homelab-prd-public
+  variables:
+    DEPLOY_ENV: temp
+    # we deployed to a temp name
+    NAMESPACE: ${CI_PROJECT_NAME}-${CI_BUILD_REF}
+    # we need to pass the URL to test
+    BASE_URL: https://better-${CI_BUILD_REF}.asksven.io
 
-.cleanup_template: &cleanup_template
-  stage: status
-  image: ksiebel/docker-kubernetes-deploy
-  script:
-  - kubectl delete ${NAMESPACE}
-  when: manual
-
-cleanup dev:
+cleanup temp deployment:
+  stage: test_clean
   <<: *cleanup_template
+  tags:
+    - asksven-homelab-prd-public
+  variables:
+    DEPLOY_ENV: temp
+    # we deployed to a temp name
+    NAMESPACE: ${CI_PROJECT_NAME}-${CI_BUILD_REF}
+
+# ===========================================
+#  Deployment stage, either:
+#    a) deploy for branch
+#   or
+#    b) deploy to prd
+# ===========================================
+deploy for branch:
+  stage: deploy
+  <<: *deploy_template
+  tags:
+    - asksven-homelab-prd-public
+  variables:
+    DEPLOY_ENV: testing
+  except:
+  - master
+
+ui test branch deployment:
+  stage: deploy_test
+  <<: *test_template
+  tags:
+    - asksven-homelab-prd-public
+  variables:
+    DEPLOY_ENV: testing
+    # we need to pass the URL to test
+    BASE_URL: https://better-${CI_BUILD_REF_SLUG}.asksven.io
+  except:
+  - master
+
+deploy for prd:
+  stage: deploy
+  <<: *deploy_template
+  tags:
+    - asksven-homelab-prd-public
+  variables:
+    DEPLOY_ENV: production
   only:
   - master
-  
+
+ui test prd deployment:
+  stage: deploy_test
+  <<: *test_template
+  tags:
+    - asksven-homelab-prd-public
+  variables:
+    DEPLOY_ENV: production
+    # we need to pass the URL to test
+    BASE_URL: https://better.asksven.io
+  only:
+  - master
+
+# ===========================================
+#  Show final status
+#    a) deploy for branch
+#   or
+#    b) deploy to prd
+# ===========================================
+status namespace:
+  stage: status
+  <<: *status_template
+  tags:
+    - asksven-homelab-prd-public
+
+
