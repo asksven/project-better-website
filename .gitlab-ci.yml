@@ -3,10 +3,16 @@ variables:
   # NAMESPACE: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
   NAMESPACE: better-website
   DOCKER_IMAGE_URL: asksven/better-website
+
 stages:
   - generate
   - build
+  - test_deploy
+  - test_status
+  - test_run
+  - test_clean
   - deploy
+  - deploy_test
   - status
   - cleanup
 
