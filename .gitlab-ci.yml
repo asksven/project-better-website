@@ -26,7 +26,7 @@ generate hugo:
   stage: generate
   image: jojomi/hugo:0.53
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   script:
   # baseURL = "/" is required as we want to build the docker image once and deploy it to multiple domains (e.g. for testing)  
@@ -64,7 +64,7 @@ generate hugo:
 lint_dockerfile:
   stage: build
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   image: hadolint/hadolint:latest-debian
   script:
@@ -74,7 +74,7 @@ build container:
   stage: build
   image: docker:18.06.1-ce
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   services:
     - docker:18.06.1-ce-dind
@@ -137,7 +137,7 @@ deploy temp:
   stage: test_deploy
   <<: *deploy_template
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   variables:
     DEPLOY_ENV: temp
@@ -148,7 +148,7 @@ status temp_deployment:
   stage: test_status
   <<: *status_template
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   variables:
     DEPLOY_ENV: temp
@@ -159,7 +159,7 @@ ui test temp deployment:
   stage: test_run
   <<: *test_template
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   variables:
     DEPLOY_ENV: temp
@@ -172,7 +172,7 @@ cleanup temp deployment:
   stage: test_clean
   <<: *cleanup_template
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   variables:
     DEPLOY_ENV: temp
@@ -189,7 +189,7 @@ deploy for branch:
   stage: deploy
   <<: *deploy_template
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   variables:
     DEPLOY_ENV: testing
@@ -200,7 +200,7 @@ ui test branch deployment:
   stage: deploy_test
   <<: *test_template
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   variables:
     DEPLOY_ENV: testing
@@ -213,24 +213,24 @@ deploy for prd:
   stage: deploy
   <<: *deploy_template
   tags:
-  - asksven-homelab-prd-public
+  - asksven-homelab-prd-public-new
   #- asksven-homelab-dev
   variables:
     DEPLOY_ENV: production
   only:
   - master
 
-deploy for dr:
-  stage: deploy
-  <<: *deploy_template
-  tags:
-    - asksven-homelab-prd-public-new
-  variables:
-    DEPLOY_ENV: dr
-  only:
-  - master
-  except:
-    - schedule
+# deploy for dr:
+#   stage: deploy
+#   <<: *deploy_template
+#   tags:
+#     - asksven-homelab-prd-public-new
+#   variables:
+#     DEPLOY_ENV: dr
+#   only:
+#   - master
+#   except:
+#     - schedule
 
 ui test prd deployment:
   stage: deploy_test
