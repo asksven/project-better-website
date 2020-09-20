@@ -209,6 +209,18 @@ deploy for prd:
   only:
   - master
 
+deploy for dr:
+  stage: deploy
+  <<: *deploy_template
+  tags:
+    - asksven-homelab-prd-public-new
+  variables:
+    DEPLOY_ENV: dr
+  only:
+  - master
+  except:
+    - schedule
+
 ui test prd deployment:
   stage: deploy_test
   <<: *test_template

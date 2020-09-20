@@ -22,6 +22,10 @@ elif [ "$DEPLOY_ENV" = "temp" ]
 then
     # for temp we use the ${CI_BUILD_REF} to create a unique URL    
     HOST1="better-${CI_BUILD_REF}.asksven.io"
+elif [ "$DEPLOY_ENV" = "dr" ] 
+then
+    # for homelab we use the a static name    
+    HOST1="better.dr.asksven.io"    
 else
     # we use the branch name in the URL
     HOST1="better-${CI_COMMIT_REF_SLUG}.asksven.io"
